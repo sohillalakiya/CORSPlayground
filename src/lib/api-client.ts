@@ -62,7 +62,12 @@ export class ApiClient {
       
       if (this.useProxy) {
         // Make the API request through our proxy endpoint
-        response = await fetch('/api/proxy', {
+        // Use absolute URL in production, relative in development
+        const proxyUrl = process.env.NODE_ENV === 'production' && typeof window !== 'undefined'
+          ? `${window.location.origin}/api/proxy`
+          : '/api/proxy'
+        
+        response = await fetch(proxyUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -3,6 +3,9 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
+  let method: string | undefined
+  let url: string | undefined
+  
   try {
     // Check authentication
     const session = await getServerSession(authOptions)
@@ -14,7 +17,9 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { method, url, headers, body: requestBody } = body
+    method = body.method
+    url = body.url
+    const { headers, body: requestBody } = body
 
     // Validate input
     if (!method || !url) {
@@ -102,8 +107,17 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('Proxy error:', error)
+    console.error('Failed URL:', url)
+    console.error('Method:', method)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
+      { 
+        error: error instanceof Error ? error.message : 'Internal server error',
+        details: process.env.NODE_ENV === 'development' ? {
+          url,
+          method,
+          errorStack: error instanceof Error ? error.stack : undefined
+        } : undefined
+      },
       { status: 500 }
     )
   }
