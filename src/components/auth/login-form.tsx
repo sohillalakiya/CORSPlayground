@@ -124,18 +124,13 @@ export function LoginForm() {
             />
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="mt-5 w-full" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Sign In
             </Button>
           </CardFooter>
         </form>
       </Form>
-      <CardFooter className="flex flex-col space-y-2 text-sm text-muted-foreground">
-        <div>Demo Credentials:</div>
-        <div>Username: sohil</div>
-        <div>Password: Sohil@123</div>
-      </CardFooter>
     </Card>
   )
 }

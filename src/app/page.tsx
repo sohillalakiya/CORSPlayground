@@ -88,7 +88,7 @@ export default async function HomePage() {
                 Configure your environment, add headers, request bodies, and start testing!
               </p>
               <a href="/api-testing">
-                <button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 rounded-md">
+                <button className="w-full mt-5 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 rounded-md">
                   Open API Testing Interface
                 </button>
               </a>
