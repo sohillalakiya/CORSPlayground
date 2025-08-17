@@ -29,6 +29,34 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Handle localhost requests - allow if special header or env var is set
+    const urlObj = new URL(url)
+    const isLocalhost = urlObj.hostname === 'localhost' || 
+                       urlObj.hostname === '127.0.0.1' || 
+                       urlObj.hostname === '0.0.0.0' ||
+                       urlObj.hostname === '::1'
+    
+    // Allow localhost in development or with special configuration
+    const allowLocalhost = process.env.NODE_ENV === 'development' || 
+                          process.env.ALLOW_LOCALHOST_PROXY === 'true'
+    
+    if (isLocalhost && !allowLocalhost) {
+      // Check if user is trying to use a local tunnel service
+      return NextResponse.json(
+        { 
+          error: 'Direct localhost access not available',
+          details: 'To test local APIs from production, use a tunnel service like ngrok, localtunnel, or Cloudflare Tunnel to expose your local API with a public URL.',
+          suggestions: [
+            'Option 1: Use ngrok - Run "ngrok http 3000" and use the generated URL',
+            'Option 2: Use localtunnel - Run "lt --port 3000" and use the generated URL',
+            'Option 3: Use Cloudflare Tunnel - Set up a tunnel to your local service',
+            'Option 4: Deploy your API to a staging server'
+          ]
+        },
+        { status: 400 }
+      )
+    }
+
     // Prepare fetch options
     const fetchOptions: RequestInit = {
       method,

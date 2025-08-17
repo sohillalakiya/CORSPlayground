@@ -113,16 +113,46 @@ export function PostRequestPanel({ url, setUrl, headers, setHeaders }: PostReque
       if (err instanceof ApiError) {
         setError(err.message)
         if (err.response) {
-          // Still show the error response
-          setResponse({
-            status: err.statusCode || 0,
-            statusText: 'Error',
-            headers: {},
-            data: err.response,
-            responseTime: 0,
-            contentLength: 0,
-            contentType: 'application/json'
-          })
+          // Check if it's a localhost error in production
+          const response = err.response as { error?: string; details?: string; suggestions?: string[] }
+          if (response?.error === 'Direct localhost access not available') {
+            setError(response.details || 'Cannot access localhost from production server')
+            toast.error('Local API Access Not Available', {
+              description: 'Use a tunnel service like ngrok to expose your local API'
+            })
+            // Show suggestions in the response panel
+            if (response.suggestions) {
+              setResponse({
+                status: 400,
+                statusText: 'Local Access Error',
+                headers: {},
+                data: {
+                  error: response.error,
+                  details: response.details,
+                  solutions: response.suggestions
+                },
+                responseTime: 0,
+                contentLength: 0,
+                contentType: 'application/json'
+              })
+            }
+          } else if (response?.error === 'Cannot proxy to localhost in production') {
+            setError('Cannot proxy to localhost in production. Please use the actual domain or IP address of your API server.')
+            toast.error('Localhost URLs are not allowed in production', {
+              description: 'Use your API\'s actual domain instead of localhost'
+            })
+          } else {
+            // Still show the error response
+            setResponse({
+              status: err.statusCode || 0,
+              statusText: 'Error',
+              headers: {},
+              data: err.response,
+              responseTime: 0,
+              contentLength: 0,
+              contentType: 'application/json'
+            })
+          }
         }
       } else {
         const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred'
