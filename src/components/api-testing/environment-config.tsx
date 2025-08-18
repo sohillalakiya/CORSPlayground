@@ -11,7 +11,7 @@ import { CorsProxyToggle } from './cors-proxy-toggle'
 
 export function EnvironmentConfig() {
   const [baseUrl, setBaseUrl] = useState('')
-  const [corsProxyEnabled, setCorsProxyEnabled] = useState(true)
+  const [corsProxyEnabled, setCorsProxyEnabled] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
